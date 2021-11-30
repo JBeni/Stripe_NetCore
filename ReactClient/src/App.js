@@ -1,7 +1,14 @@
-import './App.css';
+import { BrowserRouter as Switch, Route } from 'react-router-dom';
+import PaymentForm from './PaymentForm';
 
-function App() {
-	return <div className="App"></div>;
-}
+const App = () => {
+	return (
+		<Switch>
+			<Route path="/" exact>
+				<PaymentForm />
+			</Route>
+		</Switch>
+	);
+};
 
 export default App;
