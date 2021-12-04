@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using Stripe;
 using Stripe_NetCore.Configuration;
 
 namespace Stripe_NetCore
@@ -20,12 +21,31 @@ namespace Stripe_NetCore
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // For sample support and debugging, not required for production:
+            StripeConfiguration.AppInfo = new AppInfo
+            {
+                Name = "stripe-samples/accept-a-payment/custom-payment-flow",
+                Url = "https://github.com/stripe-samples",
+                Version = "0.0.1",
+            };
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("EnableCORS", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             services.Configure<StripeOptions>(options =>
             {
                 options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY");
                 options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
                 options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET");
             });
+            StripeConfiguration.ApiKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
 
             services.AddControllersWithViews().AddNewtonsoftJson(options =>
             {
@@ -47,6 +67,8 @@ namespace Stripe_NetCore
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
+            app.UseCors("EnableCORS");
 
             app.UseHttpsRedirection();
             app.UseFileServer();

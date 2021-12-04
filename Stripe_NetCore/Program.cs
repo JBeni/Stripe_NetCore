@@ -18,7 +18,7 @@ namespace Stripe_NetCore
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseWebRoot(Environment.GetEnvironmentVariable("STATIC_DIR"));
+                    webBuilder.UseUrls(Environment.GetEnvironmentVariable("DOMAIN")).UseWebRoot("public");
                 });
         }
     }
